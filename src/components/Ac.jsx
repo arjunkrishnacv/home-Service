@@ -1,14 +1,23 @@
 import React, { useState } from 'react';
-import { Accordion, Button, FormControl, Form, Modal } from 'react-bootstrap';
+import { Accordion, Button, Form, FormControl, Modal } from 'react-bootstrap';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
-import acservice from '../assets/acservice.jpg';
+import acServiceImage from '../assets/acservice.jpg';  
 import Select from 'react-select';
-import { addRequestAPI } from '../../services/allAPI'; 
-
-
-
+import { addRequestAPI } from '../../services/allAPI';
+import { useNavigate } from 'react-router-dom';
 const Ac = () => {
+  const navigate = useNavigate();
+
   const [show, setShow] = useState(false);
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
+  const serviceOptions = [
+    { value: 'AC Installation', label: 'AC Installation', rate: 2000 },
+    { value: 'AC Servicing', label: 'AC Servicing', rate: 1500 },
+    { value: 'Gas Refill', label: 'Gas Refill', rate: 1800 },
+  ];
+
   const [orderDetails, setOrderDetails] = useState({
     uname: '',
     address: '',
@@ -16,24 +25,31 @@ const Ac = () => {
     time: '',
     description: '',
     serviceType: null,
+    rate: 2000,
   });
 
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
-
-  const serviceOptions = [{ value: 'AC repair', label: 'AC' }];
-
   const handleChange = (selectedOption) => {
-    setOrderDetails((prev) => ({
+    setOrderDetails(prev => ({
       ...prev,
       serviceType: selectedOption,
+      rate: selectedOption?.rate || 2000,
     }));
   };
 
-  const handleUpload = async () => {
-    const { uname, address, date, time, description, serviceType } = orderDetails;
+  const handleUpload = () => {
+    const orderWithRate = {
+      ...orderDetails,
+      rate: orderDetails.serviceType ? orderDetails.serviceType.rate : 2000
+    };
 
-    if (uname && address && date && time && description && serviceType) {
+    localStorage.setItem('cartOrder', JSON.stringify(orderWithRate));
+    handleClose();
+    alert('Added to Cart!');
+    navigate('/cart');
+
+    const { uname, address, date, time, description, serviceType, rate } = orderDetails;
+
+    if (uname && address && date && time && description && serviceType && rate) {
       const reqBody = new FormData();
       reqBody.append('uname', uname);
       reqBody.append('address', address);
@@ -41,34 +57,26 @@ const Ac = () => {
       reqBody.append('time', time);
       reqBody.append('description', description);
       reqBody.append('serviceType', serviceType.value);
+      reqBody.append('rate', rate);
 
       const token = sessionStorage.getItem('token');
-
       const reqHeaders = token
         ? {
             'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${token}`,
+            'Authorization': `Bearer ${token}`,
           }
-        : {
-            'Content-Type': 'multipart/form-data',
-          };
+        : { 'Content-Type': 'multipart/form-data' };
 
-      try {
-        const res = await addRequestAPI(reqBody, reqHeaders);
-        console.log('API Response:', res); // For debugging
+      addRequestAPI(reqBody, reqHeaders).then((res) => {
+        console.log('API Response:', res);
         if (res?.status === 200) {
-          alert('Request Added Successfully');
+          // success feedback can be added
         } else if (res?.status === 406) {
           alert('Order already exists!');
         } else {
           alert('Please login!');
         }
-      } catch (error) {
-        console.error('API Error:', error);
-        alert('An error occurred. Please try again.');
-      }
-
-      handleClose();
+      });
     } else {
       alert('Please fill all the details!');
     }
@@ -76,60 +84,38 @@ const Ac = () => {
 
   return (
     <>
-      <div className="container">
+      <div className="container vh-50">
         <div className="row">
           <div className="col-lg-6 mt-5">
-            <h1 className="fw-bold">
-              "Upgrade Your Cooling System with Our Expert Solutions!"
-            </h1>
-
+            <h1 className="fw-bold"><span className='text-success'>"Expert AC Services"</span> – Cool Comfort, Anytime!</h1>
             <div className="mt-5">
               <Accordion>
                 <Accordion.Item eventKey="0">
                   <Accordion.Header>Terms and Conditions</Accordion.Header>
                   <Accordion.Body>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-                    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-                    veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-                    commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-                    velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-                    cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
-                    est laborum.
+                    <ol>
+                      <li><strong>Booking & Cancellation</strong> – Appointments must be made in advance. Cancellation policy is 24 hours notice.</li>
+                      <li><strong>Service Scope</strong> – Services include AC installation, general servicing, and gas refill.</li>
+                      <li><strong>Customer Responsibilities</strong> – Ensure easy access to the unit and proper working conditions for service.</li>
+                      <li><strong>Liability</strong> – We are not liable for pre-existing conditions or faulty hardware.</li>
+                      <li><strong>Payment</strong> – Payment is due upon service completion. No refunds for completed services.</li>
+                    </ol>
+                    <p><strong>By booking, you agree to these terms.</strong></p>
                   </Accordion.Body>
                 </Accordion.Item>
               </Accordion>
             </div>
             <div className="d-flex justify-content-end mt-5">
-              <Button onClick={handleShow} variant="success fw-bold">
-                BOOK NOW
-              </Button>
+              <Button onClick={handleShow} variant="success fw-bold">BOOK NOW</Button>
             </div>
           </div>
           <div className="col-lg-6">
-            <img
-              width={'80%'}
-              className="mt-5 ms-5 shadow rounded-3"
-              src={acservice}
-              alt=""
-            />
+            <img width={'80%'} className="mt-5 ms-5 shadow rounded-3" src={acServiceImage} alt="AC Service" />
           </div>
-
           <div className="mt-5">
-            <h2 className="fw-bold">How it Works</h2>
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolore neque corporis,
-              nesciunt exercitationem incidunt sapiente unde vitae dolores maiores praesentium
-              commodi velit voluptatem itaque facilis deleniti eum quis inventore temporibus.
-              Repellat nulla possimus dignissimos itaque deserunt, totam dolores asperiores,
-              similique laudantium qui aut cupiditate. Debitis commodi sit earum porro
-              reiciendis ab officia odio, neque adipisci optio, corporis id nam eum. Deleniti
-              excepturi sed omnis nostrum ipsam odit iste commodi at ipsa, minus id. Expedita
-              odit velit dolore pariatur, rem possimus, animi quas aliquid, inventore
-              laboriosam at reiciendis sit ab error? Eum consequatur harum laborum voluptates,
-              nobis vel accusamus temporibus in reiciendis ad expedita a, laboriosam itaque rem
-              quae voluptatum doloribus adipisci commodi velit molestias tempora, praesentium
-              natus blanditiis nam. Facere.
-            </p>
+            <h3 className="fw-bold">How it Works</h3>
+            <p>Our AC services ensure that your home stays cool and comfortable:</p>
+            <p>From expert installation to regular maintenance and gas refilling, we offer complete air conditioning solutions. Book your service, and our certified professionals will handle the rest—efficiently and reliably.</p>
           </div>
         </div>
       </div>
@@ -140,50 +126,32 @@ const Ac = () => {
         </Modal.Header>
         <Modal.Body>
           <FloatingLabel controlId="floatingInput" label="Enter Your Name" className="mb-3">
-            <Form.Control
-              onChange={(e) => setOrderDetails({ ...orderDetails, uname: e.target.value })}
-              type="text"
-              placeholder="name"
-            />
+            <Form.Control onChange={(e) => setOrderDetails({ ...orderDetails, uname: e.target.value })} type="name" placeholder="name" />
           </FloatingLabel>
           <FloatingLabel controlId="floatingInput" label="Enter Your Address" className="mb-3">
-            <Form.Control
-              onChange={(e) => setOrderDetails({ ...orderDetails, address: e.target.value })}
-              type="text"
-              placeholder="address"
-            />
+            <Form.Control onChange={(e) => setOrderDetails({ ...orderDetails, address: e.target.value })} type="name" placeholder="name" />
           </FloatingLabel>
-          <FormControl
-            onChange={(e) => setOrderDetails({ ...orderDetails, date: e.target.value })}
-            type="date"
-            className="mb-3"
-          />
-          <FormControl
-            onChange={(e) => setOrderDetails({ ...orderDetails, time: e.target.value })}
-            type="time"
-            className="mb-3"
-          />
+          <FormControl onChange={(e) => setOrderDetails({ ...orderDetails, date: e.target.value })} type="date" className="mb-3" />
+          <FormControl onChange={(e) => setOrderDetails({ ...orderDetails, time: e.target.value })} type="time" className="mb-3" />
           <FloatingLabel controlId="floatingInput" label="Description if any" className="mb-3">
-            <Form.Control
-              onChange={(e) => setOrderDetails({ ...orderDetails, description: e.target.value })}
-              type="text"
-              placeholder="description"
-            />
+            <Form.Control onChange={(e) => setOrderDetails({ ...orderDetails, description: e.target.value })} type="name" placeholder="name" />
           </FloatingLabel>
-          <Select
-            options={serviceOptions}
-            placeholder="Select a service type"
-            value={orderDetails.serviceType}
-            onChange={handleChange}
+          <Select 
+            options={serviceOptions} 
+            placeholder="Select a service type" 
+            value={orderDetails.serviceType} 
+            onChange={handleChange} 
           />
+          {orderDetails.serviceType && (
+            <div className="mt-3 p-2 bg-light rounded">
+              <p className="mb-0"><strong>Selected service:</strong> {orderDetails.serviceType.label}</p>
+              <p className="mb-0"><strong>Rate:</strong> ₹{orderDetails.serviceType.rate}</p>
+            </div>
+          )}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Close
-          </Button>
-          <Button onClick={handleUpload} variant="primary">
-            Submit
-          </Button>
+          <Button variant="secondary" onClick={handleClose}>Close</Button>
+          <Button onClick={handleUpload} variant="primary">Submit</Button>
         </Modal.Footer>
       </Modal>
     </>

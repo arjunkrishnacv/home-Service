@@ -21,9 +21,11 @@ const Header = () => {
   }
 
   const handleLogout = () => {
-    sessionStorage.removeItem("token");
+    localStorage.removeItem("token");
+    localStorage.clear()
     sessionStorage.clear()
     setisLogined(false);
+    navigate('/login');
     
   }
  
@@ -41,7 +43,11 @@ const Header = () => {
               <Nav.Link onClick={() => navigate('/')} className="text-white fw-bold fs-5">Home</Nav.Link>
               <Nav.Link className="text-white fw-bold fs-5">Contact</Nav.Link>
               <Nav.Link className="text-white fw-bold fs-5">About</Nav.Link>
+              { isLogined ?
+                <Nav.Link onClick={() => navigate('/login')} className="text-white fw-bold fs-5"><i className='fa-solid fa-user'></i>User</Nav.Link>
+              :
               <Nav.Link onClick={() => navigate('/login')} className="text-white fw-bold fs-5"><i className='fa-solid fa-user'></i>User</Nav.Link>
+              }
               <Nav.Link onClick={() => navigate('/cart')} className="text-white fw-bold fs-5"><i className='fa-solid fa-cart-shopping'></i>Cart</Nav.Link>
               <Nav.Link onClick={handleLogout} className="text-white fw-bold fs-5">LogOut</Nav.Link>
               

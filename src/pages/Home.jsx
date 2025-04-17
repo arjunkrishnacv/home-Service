@@ -32,7 +32,7 @@
           <div className='row'>
               <div className='col-lg-6'>
                   <div className='container mt-5'>
-                    <h1 id='main' className='title text-dark fw-bold'>Book Trusted Home Services<span className='text-success'>Instantly...</span></h1>
+                    <h1 id='main' className='title text-dark fw-bold'>Book Trusted Home Services<span className='text-success'> Instantly...</span></h1>
                     <br />
                     <h5 className='text-dark'>Expert Home Services at Your Fingertips...<br/> Fast, Reliable, and Hassle-Free!</h5> <br />
                     <div className='text-dark'>

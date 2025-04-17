@@ -1,189 +1,188 @@
-import React, { useState } from 'react'
-import { Accordion, Button, FormControl,Form, Modal } from 'react-bootstrap'
+import React, { useState } from 'react';
+import Modal from 'react-bootstrap/Modal';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
-import { Dropdown,DropdownButton } from 'react-bootstrap'
+import { Accordion, Button, Form, FormControl } from 'react-bootstrap';
+import plumber from '../assets/plumb.jpg';
 import Select from 'react-select';
-import { addRequestAPI } from '../../services/allAPI'; 
+import { addRequestAPI } from '../../services/allAPI';
+import { useNavigate } from 'react-router-dom';
 
+const Plumbing = () => {
+  const navigate = useNavigate();
 
-import plumb from '../assets/plumb.jpg'
+  const [show, setShow] = useState(false);
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
 
-const Plumber = () => {
+  const serviceOptions = [
+    { value: 'Leak Repair', label: 'Leak Repair', rate: 1500 },
+    { value: 'Pipe Installation', label: 'Pipe Installation', rate: 2500 },
+    { value: 'Clogged Drain', label: 'Clogged Drain', rate: 1000 },
+  ];
 
-      const [show, setShow] = useState(false);
-      const handleClose = () => setShow(false);
-      const handleShow = () => setShow(true);
+  const [orderDetails, setOrderDetails] = useState({
+    uname: '',
+    address: '',
+    date: '',
+    time: '',
+    description: '',
+    serviceType: null,
+    rate: 1500, // Default rate for Leak Repair
+  });
 
+  const handleChange = (selectedOption) => {
+    setOrderDetails(prev => ({
+      ...prev,
+      serviceType: selectedOption,
+      rate: selectedOption.rate, // Update the rate with the selected service
+    }));
+  };
 
-          const serviceOptions = [
-            { value: 'Plumbing', label: 'plumbing' },
-          ];
-          
-         
-          const [orderDetails, setOrderDetails] = useState({
-            uname: '',
-            address: '',
-            date: '',
-            time: '',
-            description: '',
-            serviceType: null
-          });
-          
-            const handleChange = (selectedOption) => {
-              setOrderDetails(prev => ({
-                ...prev,serviceType: selectedOption
-              }));
-            };
-          
-            const handleUpload = () => {
-              const { uname, address, date, time, description, serviceType } = orderDetails;
-            
-              if (uname && address && date && time && description && serviceType) {
-                const reqBody = new FormData();
-                reqBody.append("uname", uname);
-                reqBody.append("address", address);
-                reqBody.append("date", date);
-                reqBody.append("time", time);
-                reqBody.append("description", description);
-                reqBody.append("serviceType", serviceType.value); //Add selected service type to the request body
-                const token = sessionStorage.getItem("token");
-            
-                const reqHeaders = token ? {
-                  "Content-Type": "multipart/form-data",
-                  "Authorization": `Bearer ${token}`
-                } : {
-                  "Content-Type": "multipart/form-data"
-                };
-            
-                addRequestAPI(reqBody, reqHeaders).then(res => {
-                  console.log("API Response:", res); // For debugging
-                  if (res?.status === 200) {
-                    alert("Request Added Successfully");
-                  } else if (res?.status === 406) {
-                    alert("Order already exists!");
-                  } else {
-                    alert("Please login!");
-                  }
-                });
-                handleClose();
-            } else {
-              alert("Please fill all the details!");
-            }
-          };
-      
-      
-      
+  const handleUpload = () => {
+    
+    // Ensure rate is being stored in localStorage
+    const orderWithRate = {
+      ...orderDetails,
+      // Make sure rate is explicitly included
+      rate: orderDetails.serviceType ? orderDetails.serviceType.rate : 1500
+    };
+    
+    localStorage.setItem('cartOrder', JSON.stringify(orderWithRate));
+    handleClose();
+    alert('Added to Cart!');
+    navigate('/cart'); 
+
+    const { uname, address, date, time, description, serviceType, rate } = orderDetails;
+
+    if (uname && address && date && time && description && serviceType && rate) {
+      const reqBody = new FormData();
+      reqBody.append('uname', uname);
+      reqBody.append('address', address);
+      reqBody.append('date', date);
+      reqBody.append('time', time);
+      reqBody.append('description', description);
+      reqBody.append('serviceType', serviceType.value);
+      reqBody.append('rate', rate); // Ensure rate is included in API request
+
+      const token = sessionStorage.getItem('token');
+
+      const reqHeaders = token
+        ? {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${token}`,
+          }
+        : { 'Content-Type': 'multipart/form-data' };
+
+      addRequestAPI(reqBody, reqHeaders).then((res) => {
+        console.log('API Response:', res);
+        if (res?.status === 200) {
+        } else if (res?.status === 406) {
+          alert('Order already exists!');
+        } else {
+          alert('Please login!');
+        }
+      });
+    } else {
+      alert('Please fill all the details!');
+    }
+  };
 
   return (
-   <>
-       
-      <div className='container'>
-          <div className='row'>
-               <div className='col-lg-6 mt-5'>
-                       <h1 className='fw-bold'>"Your Trusted Plumber for a Leak-Free Home!"</h1>
-                        <div className='container mt-5'>
-                            <Accordion>
-                            <Accordion.Item eventKey="0">
-                                <Accordion.Header>Rate Chart</Accordion.Header>
-                                <Accordion.Body>
-                                    <table>
-                                        <tr>
-                                             <th>Service</th>
-                                             <th>Rate</th>
-                                        </tr>
-                                        <tr>
-                                             <td>Plumbing Service</td>
-                                             <td>₹ 300/hr</td>
-                                        </tr>
-                                        <tr>
-                                             <td>Material Charges</td>
-                                             <td>₹ 100</td>
-                                        </tr>
-                                        <tr>
-                                             <td>Service Charge</td>
-                                             <td>₹ 100</td>
-                                        </tr>
-                                   </table>
-                                    </Accordion.Body>
-                                    </Accordion.Item>
-                            </Accordion>
-                            <br />
-                            <hr />  
-                            <Accordion>
-                                <Accordion.Item eventKey="0">
-                                    <Accordion.Header>Terms and Conditions</Accordion.Header>
-                                    <Accordion.Body>
-                                        Joboy charges for a unit of 1 hour of service initially,and every 30 minutes thereon.
-                                        Material charges will be additional. Customers can either purchase the material directly or request the service partner to procure it. Time for material procurement will be charged accordingly in the final bill. Service charge will be additional.
-                                    </Accordion.Body>
-                                    </Accordion.Item>
-                            </Accordion>
-                        </div>
-                        <div className="d-flex justify-content-end mt-5">
-                         <Button onClick={handleShow} variant="success">BOOK NOW</Button>
-                        </div>
-                  
-                 
-   
-               </div>
-               <div className='col-lg-6'>
-                   <img width={'80%'} className='mt-5 ms-5 shadow rounded-3' src={plumb} alt="" />
-           
-               </div>
-
-               <div className='mt-5'>
-                <h2 className='fw-bold'>How it Works</h2>
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolore neque corporis, nesciunt exercitationem incidunt sapiente unde vitae dolores maiores praesentium commodi velit voluptatem itaque facilis deleniti eum quis inventore temporibus.
-                Repellat nulla possimus dignissimos itaque deserunt, totam dolores asperiores, similique laudantium qui aut cupiditate. Debitis commodi sit earum porro reiciendis ab officia odio, neque adipisci optio, corporis id nam eum.
-                Deleniti excepturi sed omnis nostrum ipsam odit iste commodi at ipsa, minus id. Expedita odit velit dolore pariatur, rem possimus, animi quas aliquid, inventore laboriosam at reiciendis sit ab error?
-                Eum consequatur harum laborum voluptates, nobis vel accusamus temporibus in reiciendis ad expedita a, laboriosam itaque rem quae voluptatum doloribus adipisci commodi velit molestias tempora, praesentium natus blanditiis nam. Facere.</p>
-               </div>
+    <>
+      <div className="container vh-50">
+        <div className="row">
+          <div className="col-lg-6 mt-5">
+            <h1 className="fw-bold"><span className='text-success'>"Reliable Plumbing Services"</span> - Get Your Pipes Fixed Right!</h1>
+            <div className="mt-5">
+              <Accordion>
+                <Accordion.Item eventKey="0">
+                  <Accordion.Header>Terms and Conditions</Accordion.Header>
+                  <Accordion.Body>
+                    <ol>
+                      <li>
+                        <strong>Booking & Cancellation</strong> - Appointments must be booked in advance. Cancellations should be made at least 24 hours before the scheduled time.
+                      </li>
+                      <li>
+                        <strong>Service Scope</strong> - Our plumbing services include leak repairs, pipe installations, and clogged drain services.
+                      </li>
+                      <li>
+                        <strong>Customer Responsibilities</strong> - Ensure access to the premises and secure any valuables before the service begins.
+                      </li>
+                      <li>
+                        <strong>Liability</strong> - We are not responsible for pre-existing damages or misplaced items.
+                      </li>
+                      <li>
+                        <strong>Payment</strong> - Full payment is required upon service completion. No refunds for completed services.
+                      </li>
+                    </ol>
+                    <p>
+                      <strong>By booking, you agree to these terms.</strong>
+                    </p>
+                  </Accordion.Body>
+                </Accordion.Item>
+              </Accordion>
+            </div>
+            <div className="d-flex justify-content-end mt-5">
+              <Button onClick={handleShow} variant="success fw-bold">
+                BOOK NOW
+              </Button>
+            </div>
           </div>
+          <div className="col-lg-6">
+            <img width={'80%'} className="mt-5 ms-5 shadow rounded-3" src={plumber} alt="" />
+          </div>
+          <div className="mt-5">
+            <h3 className="fw-bold">How it Works</h3>
+            <p>Experience a hassle-free plumbing service in just a few simple steps:</p>
+            <p>
+              Whether it's a leaking pipe, clogged drain, or installation of new plumbing systems, our expert plumbers are ready to fix any issue in your home. Simply select the type of service, choose your preferred time and date, and confirm your booking.
+              Our skilled plumbers will arrive promptly with all the necessary tools to get the job done efficiently. Upon completion, enjoy your newly repaired plumbing and make a secure payment.
+              Get your plumbing issues resolved quickly and easily – we handle the tough jobs so you don’t have to!
+            </p>
+          </div>
+        </div>
       </div>
 
-
-      <Modal
-        centered
-        show={show}
-        onHide={handleClose}
-        backdrop="static"
-        keyboard={false}
-      >
-          <Modal.Header closeButton>
+      <Modal centered show={show} onHide={handleClose} backdrop="static" keyboard={false}>
+        <Modal.Header closeButton>
           <Modal.Title>Enter the Required Details</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-          <FloatingLabel
-          controlId="floatingInput" label="Enter Your Name" className="mb-3">
-          <Form.Control onChange={e=>setOrderDetails({...orderDetails,uname:e.target.value})} type="name" placeholder="name" />
+        </Modal.Header>
+        <Modal.Body>
+          <FloatingLabel controlId="floatingInput" label="Enter Your Name" className="mb-3">
+            <Form.Control onChange={(e) => setOrderDetails({ ...orderDetails, uname: e.target.value })} type="name" placeholder="name" />
           </FloatingLabel>
-          <FloatingLabel
-          controlId="floatingInput" label="Enter Your Address" className="mb-3">
-          <Form.Control onChange={e=>setOrderDetails({...orderDetails,address:e.target.value})} type="name" placeholder="name" />
+          <FloatingLabel controlId="floatingInput" label="Enter Your Address" className="mb-3">
+            <Form.Control onChange={(e) => setOrderDetails({ ...orderDetails, address: e.target.value })} type="name" placeholder="name" />
           </FloatingLabel>
-          <FormControl onChange={e=>setOrderDetails({...orderDetails,date:e.target.value})} type="date" controlId="floatingInput" className='mb-3'></FormControl>
-          <FormControl onChange={e=>setOrderDetails({...orderDetails,time:e.target.value})} type="time" controlId="floatingInput" className='mb-3'></FormControl>
-          <FloatingLabel
-          controlId="floatingInput" label="Description if any" className="mb-3">
-          <Form.Control onChange={e=>setOrderDetails({...orderDetails,description:e.target.value})} type="name" placeholder="name" />
+          <FormControl onChange={(e) => setOrderDetails({ ...orderDetails, date: e.target.value })} type="date" controlId="floatingInput" className="mb-3"></FormControl>
+          <FormControl onChange={(e) => setOrderDetails({ ...orderDetails, time: e.target.value })} type="time" controlId="floatingInput" className="mb-3"></FormControl>
+          <FloatingLabel controlId="floatingInput" label="Description if any" className="mb-3">
+            <Form.Control onChange={(e) => setOrderDetails({ ...orderDetails, description: e.target.value })} type="name" placeholder="name" />
           </FloatingLabel>
-          <Select
-        options={serviceOptions}
-        placeholder="Select a service type"
-        value={orderDetails.serviceType}
-        onChange={handleChange}
-        
-      />
-
+          <Select 
+            options={serviceOptions} 
+            placeholder="Select a service type" 
+            value={orderDetails.serviceType} 
+            onChange={handleChange} 
+          />
+          {orderDetails.serviceType && (
+            <div className="mt-3 p-2 bg-light rounded">
+              <p className="mb-0"><strong>Selected service:</strong> {orderDetails.serviceType.label}</p>
+              <p className="mb-0"><strong>Rate:</strong> ₹{orderDetails.serviceType.rate}</p>
+            </div>
+          )}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>Close</Button>
-          <Button onClick={handleUpload} variant="primary">Submit</Button>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+          <Button onClick={handleUpload} variant="primary">
+            Submit
+          </Button>
         </Modal.Footer>
       </Modal>
-   
-       </>
-  )
-}
+    </>
+  );
+};
 
-export default Plumber
+export default Plumbing;
