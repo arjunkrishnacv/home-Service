@@ -13,7 +13,7 @@ const Footer = () => {
     return null;
   }
   return (
-    <div className="bg-primary p-4">
+    <div className="bg-success p-4">
       <div className="container">
         <div className="row">
           {/* Intro */}
@@ -52,12 +52,12 @@ const Footer = () => {
 
             {/* Social Links */}
             <div className="d-flex justify-content-between mt-3">
-              <a href="https://react.dev/" className="text-white text-decoration-none"><i className="fa-brands fa-twitter"></i></a>
-              <a href="https://react.dev/" className="text-white text-decoration-none"><i className="fa-brands fa-instagram"></i></a>
-              <a href="https://react.dev/" className="text-white text-decoration-none"><i className="fa-brands fa-whatsapp"></i></a>
-              <a href="https://react.dev/" className="text-white text-decoration-none"><i className="fa-brands fa-facebook"></i></a>
-              <a href="https://react.dev/" className="text-white text-decoration-none"><i className="fa-brands fa-linkedin"></i></a>
-              <a href="https://react.dev/" className="text-white text-decoration-none"><i className="fa-brands fa-github"></i></a>
+              <a href="" className="text-white text-decoration-none"><i className="fa-brands fa-twitter"></i></a>
+              <a href="" className="text-white text-decoration-none"><i className="fa-brands fa-instagram"></i></a>
+              <a href="" className="text-white text-decoration-none"><i className="fa-brands fa-whatsapp"></i></a>
+              <a href="" className="text-white text-decoration-none"><i className="fa-brands fa-facebook"></i></a>
+              <a href="" className="text-white text-decoration-none"><i className="fa-brands fa-linkedin"></i></a>
+              <a href="" className="text-white text-decoration-none"><i className="fa-brands fa-github"></i></a>
             </div>
           </div>
         </div>

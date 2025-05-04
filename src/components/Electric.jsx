@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import { Accordion, Button, Form, FormControl } from 'react-bootstrap';
@@ -6,6 +6,8 @@ import electrician from '../assets/electritian.jpg';  // your electrician image 
 import Select from 'react-select';
 import { addRequestAPI } from '../../services/allAPI';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
+
 
 const Electric = () => {
   const navigate = useNavigate();
@@ -47,8 +49,15 @@ const Electric = () => {
 
     localStorage.setItem('cartOrder', JSON.stringify(orderWithRate));
     handleClose();
-    alert('Added to Cart!');
-    navigate('/cart');
+
+    // When adding a new order to cart
+const addToCart = (newOrder) => {
+  const existingOrders = JSON.parse(localStorage.getItem('cartOrders')) || [];
+  const updatedOrders = [...existingOrders, newOrder];
+  localStorage.setItem('cartOrders', JSON.stringify(updatedOrders));
+  // Update state or show notification
+};
+   
 
     const { uname, address, date, time, description, serviceType, rate } = orderDetails;
 
@@ -73,18 +82,46 @@ const Electric = () => {
 
       addRequestAPI(reqBody, reqHeaders).then((res) => {
         console.log('API Response:', res);
+        //success
         if (res?.status === 200) {
-          // You could also show a success message here
+          Swal.fire({
+            title: 'Added to Cart!',
+            text: 'Your service has been successfully added to your cart!.',
+            icon: 'success',
+            confirmButtonColor: '#28a745', // Bootstrap green
+            confirmButtonText: 'OK'
+          });
+      navigate('/cart');
         } else if (res?.status === 406) {
-          alert('Order already exists!');
+          Swal.fire({
+                      title: 'Order Already Exists!',
+                      text: 'You have already placed this order. Please check your cart.',
+                      icon: 'warning',
+                      confirmButtonColor: '#f39c12', // Orange/yellow
+                      confirmButtonText: 'OK'
+                    });
         } else {
-          alert('Please login!');
+          Swal.fire({
+            title: 'Error!',
+            text: 'Please Login!',
+            icon: 'error',
+            confirmButtonColor: '#dc3545', // Bootstrap red
+            confirmButtonText: 'OK'
+          });
         }
       });
     } else {
-      alert('Please fill all the details!');
+      Swal.fire({
+        title: 'Incomplete Details!',
+        text: 'Please fill all the details!',
+        icon: 'warning',
+        confirmButtonColor: '#ffc107', // Bootstrap yellow
+        confirmButtonText: 'OK'
+      });
     }
   };
+
+
 
   return (
     <>

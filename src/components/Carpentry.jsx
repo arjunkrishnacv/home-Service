@@ -5,6 +5,7 @@ import carp from '../assets/carp.jpg';  // Your carpentry image here
 import Select from 'react-select';
 import { addRequestAPI } from '../../services/allAPI';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const Carpentry = () => {
   const navigate = useNavigate();
@@ -46,7 +47,13 @@ const Carpentry = () => {
 
     localStorage.setItem('cartOrder', JSON.stringify(orderWithRate));
     handleClose();
-    alert('Added to Cart!');
+   Swal.fire({
+         title: 'Added to Cart!',
+         text: 'Your service has been successfully added to your cart!.',
+         icon: 'success',
+         confirmButtonColor: '#28a745', // Bootstrap green
+         confirmButtonText: 'OK'
+       });
     navigate('/cart');
 
     const { uname, address, date, time, description, serviceType, rate } = orderDetails;
@@ -74,14 +81,40 @@ const Carpentry = () => {
         console.log('API Response:', res);
         if (res?.status === 200) {
           // You could also show a success message here
+          Swal.fire({
+            title: 'Added to Cart!',
+            text: 'Your service has been successfully added to the cart.',
+            icon: 'success',
+            confirmButtonColor: '#28a745', // Green color for success
+            confirmButtonText: 'OK'
+          });
+          
         } else if (res?.status === 406) {
-          alert('Order already exists!');
+          Swal.fire({
+                      title: 'Order Already Exists!',
+                      text: 'You have already placed this order. Please check your cart.',
+                      icon: 'warning',
+                      confirmButtonColor: '#f39c12', // Orange/yellow
+                      confirmButtonText: 'OK'
+                    });
         } else {
-          alert('Please login!');
+          Swal.fire({
+            title: 'Login Required!',
+            text: 'Please login to place your order.',
+            icon: 'warning',
+            confirmButtonColor: '#f39c12', // Orange/yellow
+            confirmButtonText: 'OK'
+          });
         }
       });
     } else {
-      alert('Please fill all the details!');
+      Swal.fire({
+        title: 'Missing Fields!',
+        text: 'Please fill all the details before submitting.',
+        icon: 'warning',
+        confirmButtonColor: '#f39c12', // Orange/yellow
+        confirmButtonText: 'OK'
+      });
     }
   };
 

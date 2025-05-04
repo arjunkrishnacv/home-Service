@@ -5,6 +5,7 @@ import washingMachineImg from '../assets/wash.jpg'; // Replace with your image p
 import Select from 'react-select';
 import { addRequestAPI } from '../../services/allAPI';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const Washing = () => {
   const navigate = useNavigate();
@@ -38,49 +39,82 @@ const Washing = () => {
   };
 
   const handleUpload = () => {
+    // Check if all required fields are filled first
+    const { uname, address, date, time, description, serviceType } = orderDetails;
+  
+    if (!uname || !address || !date || !time || !description || !serviceType) {
+      Swal.fire({
+        title: 'Missing Information',
+        text: 'Please fill in all the required fields.',
+        icon: 'warning',
+        confirmButtonColor: '#f39c12',
+        confirmButtonText: 'OK'
+      });
+      return; // Exit early if validation fails
+    }
+  
+    // Calculate rate based on serviceType
+    const rate = serviceType ? serviceType.rate : 1500;
+    
+    // Create updated order with rate
     const orderWithRate = {
       ...orderDetails,
-      rate: orderDetails.serviceType ? orderDetails.serviceType.rate : 1500
+      rate
     };
-
+  
+    // Save to localStorage
     localStorage.setItem('cartOrder', JSON.stringify(orderWithRate));
     handleClose();
-    alert('Added to Cart!');
-    navigate('/cart');
-
-    const { uname, address, date, time, description, serviceType, rate } = orderDetails;
-
-    if (uname && address && date && time && description && serviceType && rate) {
-      const reqBody = new FormData();
-      reqBody.append('uname', uname);
-      reqBody.append('address', address);
-      reqBody.append('date', date);
-      reqBody.append('time', time);
-      reqBody.append('description', description);
-      reqBody.append('serviceType', serviceType.value);
-      reqBody.append('rate', rate);
-
-      const token = sessionStorage.getItem('token');
-      const reqHeaders = token
-        ? {
-            'Content-Type': 'multipart/form-data',
-            'Authorization': `Bearer ${token}`,
-          }
-        : { 'Content-Type': 'multipart/form-data' };
-
-      addRequestAPI(reqBody, reqHeaders).then((res) => {
-        console.log('API Response:', res);
-        if (res?.status === 200) {
-          // Success
-        } else if (res?.status === 406) {
-          alert('Order already exists!');
-        } else {
-          alert('Please login!');
+    
+   
+  
+    // Prepare API request
+    const reqBody = new FormData();
+    reqBody.append('uname', uname);
+    reqBody.append('address', address);
+    reqBody.append('date', date);
+    reqBody.append('time', time);
+    reqBody.append('description', description);
+    reqBody.append('serviceType', serviceType.value);
+    reqBody.append('rate', rate);
+  
+    const token = sessionStorage.getItem('token');
+    const reqHeaders = token
+      ? {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${token}`,
         }
-      });
-    } else {
-      alert('Please fill all the details!');
-    }
+      : { 'Content-Type': 'multipart/form-data' };
+  
+    // Make API request
+    addRequestAPI(reqBody, reqHeaders).then((res) => {
+      console.log('API Response:', res);
+      if (res?.status === 200) {
+         // Show success message
+    Swal.fire({
+      title: 'Added to Cart!',
+      text: 'Your service has been successfully added to your cart!',
+      icon: 'success',
+      confirmButtonColor: '#28a745',
+      confirmButtonText: 'OK'
+    });
+        navigate('/cart');
+      } else if (res?.status === 406) {
+        Swal.fire({
+          title: 'Order Already Exists!',
+          text: 'You have already placed this order. Please check your cart.',
+          icon: 'warning',
+          confirmButtonColor: '#f39c12',
+          confirmButtonText: 'OK'
+        });
+      } else {
+        alert('Please login!');
+        navigate('/login'); 
+      }
+    }).catch(error => {
+      console.error('API Error:', error);
+      alert('An error occurred. Please try again later.');
+    });
   };
 
   return (

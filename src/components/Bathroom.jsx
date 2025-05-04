@@ -5,6 +5,7 @@ import bath from '../assets/bath.jpg'
 import Select from 'react-select';
 import { addRequestAPI } from '../../services/allAPI'; 
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 
 const Bathroom = () => {
@@ -38,58 +39,70 @@ const Bathroom = () => {
     }));
   };
 
-  const handleUpload = () => {
-    // Ensure rate is being stored in localStorage
-    const orderWithRate = {
-      ...orderDetails,
-      rate: orderDetails.serviceType ? orderDetails.serviceType.rate : 1500
-    };
+    const handleUpload = () => {
+      // Ensure rate is being stored in localStorage
+      const orderWithRate = {
+        ...orderDetails,
+        rate: orderDetails.serviceType ? orderDetails.serviceType.rate : 1500
+      };
 
-    localStorage.setItem('cartOrder', JSON.stringify(orderWithRate));
-    handleClose();
-    alert('Added to Cart!');
-    navigate('/cart');
+      localStorage.setItem('cartOrder', JSON.stringify(orderWithRate));
+      handleClose();
+      Swal.fire({
+            title: 'Added to Cart!',
+            text: 'Your service has been successfully added to your cart!.',
+            icon: 'success',
+            confirmButtonColor: '#28a745', // Bootstrap green
+            confirmButtonText: 'OK'
+          });
+      navigate('/cart');
 
-    const { uname, address, date, time, description, serviceType, rate } = orderDetails;
+      const { uname, address, date, time, description, serviceType, rate } = orderDetails;
 
-    if (uname && address && date && time && description && serviceType && rate) {
-      const reqBody = new FormData();
-      reqBody.append('uname', uname);
-      reqBody.append('address', address);
-      reqBody.append('date', date);
-      reqBody.append('time', time);
-      reqBody.append('description', description);
-      reqBody.append('serviceType', serviceType.value);
-      reqBody.append('rate', rate); // Ensure rate is included in API request
+      if (uname && address && date && time && description && serviceType && rate) {
+        const reqBody = new FormData();
+        reqBody.append('uname', uname);
+        reqBody.append('address', address);
+        reqBody.append('date', date);
+        reqBody.append('time', time);
+        reqBody.append('description', description);
+        reqBody.append('serviceType', serviceType.value);
+        reqBody.append('rate', rate); // Ensure rate is included in API request
 
-      const token = sessionStorage.getItem('token');
+        const token = sessionStorage.getItem('token');
 
-      const reqHeaders = token
-        ? {
-            'Content-Type': 'multipart/form-data',
-            'Authorization': `Bearer ${token}`,
+        const reqHeaders = token
+          ? {
+              'Content-Type': 'multipart/form-data',
+              'Authorization': `Bearer ${token}`,
+            }
+          : { 'Content-Type': 'multipart/form-data' };
+
+        addRequestAPI(reqBody, reqHeaders).then((res) => {
+          console.log('API Response:', res);
+          if (res?.status === 200) {
+            // You could also show a success message here
+          } else if (res?.status === 406) {
+          Swal.fire({
+                      title: 'Order Already Exists!',
+                      text: 'You have already placed this order. Please check your cart.',
+                      icon: 'warning',
+                      confirmButtonColor: '#f39c12', // Orange/yellow
+                      confirmButtonText: 'OK'
+                    });
+          } else {
+            alert('Please login!');
           }
-        : { 'Content-Type': 'multipart/form-data' };
-
-      addRequestAPI(reqBody, reqHeaders).then((res) => {
-        console.log('API Response:', res);
-        if (res?.status === 200) {
-          // You could also show a success message here
-        } else if (res?.status === 406) {
-          alert('Order already exists!');
-        } else {
-          alert('Please login!');
-        }
-      });
-    } else {
-      alert('Please fill all the details!');
-    }
-  };
+        });
+      } else {
+        alert('Please fill all the details!');
+      }
+    };
 
   return (
     <>
       <div className="container vh-50">
-        <div className="row">
+        <div className="row ">
           <div className="col-lg-6 mt-5">
             <h1 className="fw-bold"><span className='text-success'>"Professional Bathroom Cleaning"</span> - Fresh, Clean, and Hygienic!</h1>
             <div className="mt-5">
@@ -144,12 +157,12 @@ const Bathroom = () => {
         <Modal.Header closeButton>
           <Modal.Title>Enter the Required Details</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+          <Modal.Body>
           <FloatingLabel controlId="floatingInput" label="Enter Your Name" className="mb-3">
-            <Form.Control onChange={(e) => setOrderDetails({ ...orderDetails, uname: e.target.value })} type="name" placeholder="name" />
+          <Form.Control onChange={(e) => setOrderDetails({ ...orderDetails, uname: e.target.value })} type="name" placeholder="name" />
           </FloatingLabel>
           <FloatingLabel controlId="floatingInput" label="Enter Your Address" className="mb-3">
-            <Form.Control onChange={(e) => setOrderDetails({ ...orderDetails, address: e.target.value })} type="name" placeholder="name" />
+          <Form.Control onChange={(e) => setOrderDetails({ ...orderDetails, address: e.target.value })} type="name" placeholder="name" />
           </FloatingLabel>
           <FormControl onChange={(e) => setOrderDetails({ ...orderDetails, date: e.target.value })} type="date" controlId="floatingInput" className="mb-3"></FormControl>
           <FormControl onChange={(e) => setOrderDetails({ ...orderDetails, time: e.target.value })} type="time" controlId="floatingInput" className="mb-3"></FormControl>

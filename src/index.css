@@ -24,7 +24,8 @@
   border-top-right-radius: 70px;
 }
 #main{
-  font-size: 300%;
+  font-size: 350%;
+  
 }
 
 
@@ -38,7 +39,7 @@
 
 .card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 12px 24px rgba(0, 254, 152, 0.573);
+  box-shadow: 0 12px 24px rgba(158, 162, 161, 0.573);
 }
 
 
@@ -75,3 +76,99 @@
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Soft shadow */
 }
 
+.contact-section {
+  background: linear-gradient(135deg, #f7fdf9, #ffffff);
+}
+
+.contact-section h2 {
+  font-size: 2.7rem;
+}
+
+.contact-section p {
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+}
+
+.contact-section form input,
+.contact-section form textarea {
+  border: 1px solid #ced4da;
+  background: #f9f9f9;
+}
+
+.contact-section form input:focus,
+.contact-section form textarea:focus {
+  background: #fff;
+  border-color: #198754;
+  box-shadow: none;
+}
+
+
+.bg-video {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  object-fit: cover;
+  z-index: -2;
+}
+
+.video-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  background-color: rgba(0, 0, 0, 0.4); /* dim background */
+  z-index: -1;
+}
+
+
+
+
+/* Add this to your global CSS or a specific header CSS file */
+
+/* Basic styling for the navbar */
+.navbar {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+/* Active link styling */
+.nav-link.active {
+  color: #0d6efd !important;
+}
+
+/* Simple hover effect for nav links */
+.nav-link:hover {
+  color: #0d6efd !important;
+}
+
+/* Dropdown styling */
+.dropdown-menu {
+  border-radius: 0.25rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  border: none;
+}
+
+.dropdown-item {
+  padding: 0.5rem 1rem;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+}
+
+/* Responsive adjustments */
+@media (max-width: 991.98px) {
+  .navbar-nav {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+  
+  .dropdown-menu {
+    border: none;
+    box-shadow: none;
+    padding-left: 1rem;
+  }
+}

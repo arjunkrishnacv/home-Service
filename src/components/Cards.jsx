@@ -36,13 +36,13 @@ const Cards = () => {
         <Card  onClick={()=>navigate("/plumber")} style={{ width: '25%', height:'25%' }} >
         <Card.Img variant="" src={plumber} />
         <Card.Body>
-         <h6 style={{fontSize:'100%'}}>Plumber</h6>
+         <h6 style={{fontSize:'100%'}}>Plumbing</h6>
         </Card.Body>
       </Card>
       <Card  onClick={()=>navigate("/electric")} style={{ width: '25%', height:'25%'  }} >
         <Card.Img variant="" src={electric} />
         <Card.Body>
-         <h6 style={{fontSize:'100%'}}>Electric</h6>
+         <h6 style={{fontSize:'100%'}}>Electricals</h6>
         </Card.Body>
       </Card>
       </div>
@@ -57,7 +57,7 @@ const Cards = () => {
       <Card onClick={()=>navigate("/bathroom")} style={{ width: '25%', height:'25%'  }} >
         <Card.Img variant="" src={bathroom} />
         <Card.Body>
-         <h6 style={{fontSize:'100%'}}>Bathroom</h6>
+         <h6 style={{fontSize:'100%'}}>Bathroom Services</h6>
         </Card.Body>
        </Card>
         

@@ -5,6 +5,9 @@ import acServiceImage from '../assets/acservice.jpg';
 import Select from 'react-select';
 import { addRequestAPI } from '../../services/allAPI';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const Ac = () => {
   const navigate = useNavigate();
 
@@ -28,6 +31,8 @@ const Ac = () => {
     rate: 2000,
   });
 
+
+
   const handleChange = (selectedOption) => {
     setOrderDetails(prev => ({
       ...prev,
@@ -42,14 +47,21 @@ const Ac = () => {
       rate: orderDetails.serviceType ? orderDetails.serviceType.rate : 2000
     };
 
-    localStorage.setItem('cartOrder', JSON.stringify(orderWithRate));
     handleClose();
-    alert('Added to Cart!');
-    navigate('/cart');
+    
+
+    // Example usage when adding to cart
+const addToCart = (newOrder) => {
+  const existing = JSON.parse(localStorage.getItem('cartOrders')) || [];
+  const updated = [...existing, newOrder];
+  localStorage.setItem('cartOrders', JSON.stringify(updated));
+};
+
 
     const { uname, address, date, time, description, serviceType, rate } = orderDetails;
 
     if (uname && address && date && time && description && serviceType && rate) {
+      localStorage.setItem('cartOrder', JSON.stringify(orderWithRate));
       const reqBody = new FormData();
       reqBody.append('uname', uname);
       reqBody.append('address', address);
@@ -67,18 +79,44 @@ const Ac = () => {
           }
         : { 'Content-Type': 'multipart/form-data' };
 
-      addRequestAPI(reqBody, reqHeaders).then((res) => {
+        addRequestAPI(reqBody, reqHeaders).then((res) => {
         console.log('API Response:', res);
         if (res?.status === 200) {
           // success feedback can be added
+          Swal.fire({
+            title: 'Added to Cart!',
+            text: 'Your service has been successfully added to your cart!.',
+            icon: 'success',
+            confirmButtonColor: '#28a745', // Bootstrap green
+            confirmButtonText: 'OK'
+          });
+          navigate('/cart');
         } else if (res?.status === 406) {
-          alert('Order already exists!');
+         Swal.fire({
+                     title: 'Order Already Exists!',
+                     text: 'You have already placed this order. Please check your cart.',
+                     icon: 'warning',
+                     confirmButtonColor: '#f39c12', // Orange/yellow
+                     confirmButtonText: 'OK'
+                   });
         } else {
-          alert('Please login!');
+          Swal.fire({
+            title: 'Please Login!',
+            text: 'Login to make your orders.',
+            icon: 'request',
+            confirmButtonColor: '#f39c12', // Orange/yellow
+            confirmButtonText: 'OK'
+          });
         }
       });
     } else {
-      alert('Please fill all the details!');
+      Swal.fire({
+        title: 'Incomplete details!',
+        text: 'Please fill all the details',
+        icon: 'warning',
+        confirmButtonColor: '#f39c12', // Orange/yellow
+        confirmButtonText: 'OK'
+      });
     }
   };
 
@@ -87,18 +125,18 @@ const Ac = () => {
       <div className="container vh-50">
         <div className="row">
           <div className="col-lg-6 mt-5">
-            <h1 className="fw-bold"><span className='text-success'>"Expert AC Services"</span> – Cool Comfort, Anytime!</h1>
+            <h1 className="fw-bold">"Expert AC Services" -<span className='text-success'> Cool Comfort, Anytime!</span></h1>
             <div className="mt-5">
               <Accordion>
                 <Accordion.Item eventKey="0">
                   <Accordion.Header>Terms and Conditions</Accordion.Header>
                   <Accordion.Body>
                     <ol>
-                      <li><strong>Booking & Cancellation</strong> – Appointments must be made in advance. Cancellation policy is 24 hours notice.</li>
-                      <li><strong>Service Scope</strong> – Services include AC installation, general servicing, and gas refill.</li>
-                      <li><strong>Customer Responsibilities</strong> – Ensure easy access to the unit and proper working conditions for service.</li>
-                      <li><strong>Liability</strong> – We are not liable for pre-existing conditions or faulty hardware.</li>
-                      <li><strong>Payment</strong> – Payment is due upon service completion. No refunds for completed services.</li>
+                      <li><strong>Booking & Cancellation</strong> - Appointments must be made in advance. Cancellation policy is 24 hours notice.</li>
+                      <li><strong>Service Scope</strong> - Services include AC installation, general servicing, and gas refill.</li>
+                      <li><strong>Customer Responsibilities</strong> - Ensure easy access to the unit and proper working conditions for service.</li>
+                      <li><strong>Liability</strong> - We are not liable for pre-existing conditions or faulty hardware.</li>
+                      <li><strong>Payment</strong> - Payment is due upon service completion. No refunds for completed services.</li>
                     </ol>
                     <p><strong>By booking, you agree to these terms.</strong></p>
                   </Accordion.Body>
@@ -154,6 +192,7 @@ const Ac = () => {
           <Button onClick={handleUpload} variant="primary">Submit</Button>
         </Modal.Footer>
       </Modal>
+      <ToastContainer position="top-right" autoClose={3000} />
     </>
   );
 };

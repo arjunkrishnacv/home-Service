@@ -6,6 +6,7 @@ import plumber from '../assets/plumb.jpg';
 import Select from 'react-select';
 import { addRequestAPI } from '../../services/allAPI';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const Plumbing = () => {
   const navigate = useNavigate();
@@ -39,53 +40,77 @@ const Plumbing = () => {
   };
 
   const handleUpload = () => {
+        // Ensure rate is being stored in localStorage
+        const orderWithRate = {
+          ...orderDetails,
+          rate: orderDetails.serviceType ? orderDetails.serviceType.rate : 2000
+        };
     
-    // Ensure rate is being stored in localStorage
-    const orderWithRate = {
-      ...orderDetails,
-      // Make sure rate is explicitly included
-      rate: orderDetails.serviceType ? orderDetails.serviceType.rate : 1500
-    };
+        localStorage.setItem('cartOrder', JSON.stringify(orderWithRate));
+        handleClose();
+       
     
-    localStorage.setItem('cartOrder', JSON.stringify(orderWithRate));
-    handleClose();
-    alert('Added to Cart!');
-    navigate('/cart'); 
-
-    const { uname, address, date, time, description, serviceType, rate } = orderDetails;
-
-    if (uname && address && date && time && description && serviceType && rate) {
-      const reqBody = new FormData();
-      reqBody.append('uname', uname);
-      reqBody.append('address', address);
-      reqBody.append('date', date);
-      reqBody.append('time', time);
-      reqBody.append('description', description);
-      reqBody.append('serviceType', serviceType.value);
-      reqBody.append('rate', rate); // Ensure rate is included in API request
-
-      const token = sessionStorage.getItem('token');
-
-      const reqHeaders = token
-        ? {
-            'Content-Type': 'multipart/form-data',
-            'Authorization': `Bearer ${token}`,
-          }
-        : { 'Content-Type': 'multipart/form-data' };
-
-      addRequestAPI(reqBody, reqHeaders).then((res) => {
-        console.log('API Response:', res);
-        if (res?.status === 200) {
-        } else if (res?.status === 406) {
-          alert('Order already exists!');
+        const { uname, address, date, time, description, serviceType, rate } = orderDetails;
+    
+        if (uname && address && date && time && description && serviceType && rate) {
+          const reqBody = new FormData();
+          reqBody.append('uname', uname);
+          reqBody.append('address', address);
+          reqBody.append('date', date);
+          reqBody.append('time', time);
+          reqBody.append('description', description);
+          reqBody.append('serviceType', serviceType.value);
+          reqBody.append('rate', rate); // Ensure rate is included in API request
+    
+          const token = sessionStorage.getItem('token');
+    
+          const reqHeaders = token
+            ? {
+                'Content-Type': 'multipart/form-data',
+                'Authorization': `Bearer ${token}`,
+              }
+            : { 'Content-Type': 'multipart/form-data' };
+    
+          addRequestAPI(reqBody, reqHeaders).then((res) => {
+            console.log('API Response:', res);
+            //success
+            if (res?.status === 200) {
+              Swal.fire({
+                title: 'Added to Cart!',
+                text: 'Your service has been successfully added to your cart!.',
+                icon: 'success',
+                confirmButtonColor: '#28a745', // Bootstrap green
+                confirmButtonText: 'OK'
+              });
+          navigate('/cart');
+            } else if (res?.status === 406) {
+              Swal.fire({
+                          title: 'Order Already Exists!',
+                          text: 'You have already placed this order. Please check your cart.',
+                          icon: 'warning',
+                          confirmButtonColor: '#f39c12', // Orange/yellow
+                          confirmButtonText: 'OK'
+                        });
+            } else {
+              Swal.fire({
+                title: 'Error!',
+                text: 'Please Login!',
+                icon: 'error',
+                confirmButtonColor: '#dc3545', // Bootstrap red
+                confirmButtonText: 'OK'
+              });
+            }
+          });
         } else {
-          alert('Please login!');
+          Swal.fire({
+            title: 'Incomplete Details!',
+            text: 'Please fill all the details!',
+            icon: 'warning',
+            confirmButtonColor: '#ffc107', // Bootstrap yellow
+            confirmButtonText: 'OK'
+          });
         }
-      });
-    } else {
-      alert('Please fill all the details!');
-    }
-  };
+      };
 
   return (
     <>

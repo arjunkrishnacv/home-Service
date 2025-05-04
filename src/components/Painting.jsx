@@ -5,6 +5,7 @@ import paint from '../assets/paint.jpg';  // Your painting image here
 import Select from 'react-select';
 import { addRequestAPI } from '../../services/allAPI';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const Painting = () => {
   const navigate = useNavigate();
@@ -46,7 +47,13 @@ const Painting = () => {
 
     localStorage.setItem('cartOrder', JSON.stringify(orderWithRate));
     handleClose();
-    alert('Added to Cart!');
+    Swal.fire({
+          title: 'Added to Cart!',
+          text: 'Your service has been successfully added to your cart!.',
+          icon: 'success',
+          confirmButtonColor: '#28a745',
+          confirmButtonText: 'OK'
+        });
     navigate('/cart');
 
     const { uname, address, date, time, description, serviceType, rate } = orderDetails;
@@ -75,7 +82,13 @@ const Painting = () => {
         if (res?.status === 200) {
           // You could also show a success message here
         } else if (res?.status === 406) {
-          alert('Order already exists!');
+          Swal.fire({
+                      title: 'Order Already Exists!',
+                      text: 'You have already placed this order. Please check your cart.',
+                      icon: 'warning',
+                      confirmButtonColor: '#f39c12', // Orange/yellow
+                      confirmButtonText: 'OK'
+                    });
         } else {
           alert('Please login!');
         }

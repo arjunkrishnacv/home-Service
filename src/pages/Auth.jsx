@@ -2,9 +2,12 @@ import React, { useState } from 'react'
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from 'react-bootstrap/Form';
 import { Link, useNavigate } from 'react-router-dom';
-import loginback from '../assets/loginback.jpg'
 import { loginAPI, registerAPI } from '../../services/allAPI';
 import { Spinner } from 'react-bootstrap';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Swal from 'sweetalert2';
+import bgv2 from '../assets/bgv2.mp4'
 
 
 const Auth = ({insideRegister}) => {
@@ -23,12 +26,17 @@ const Auth = ({insideRegister}) => {
     console.log("inside handleRegister");
     if(inputData.username && inputData.email && inputData.password){
       //alert("make api call")
-
       try{
         const result = await registerAPI(inputData)
         console.log(result);
         if(result.status==200){
-          alert(`Welcome ${result.data?.username},..Please Login to Explore!!`)
+          Swal.fire({
+            title: 'Success!',
+            text: `Welcome ${result.data?.username}...Please Login to Explore!!`,
+            icon: 'success',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'OK'
+          });
           navigate('/login')
           setInputData({username:"", email:"", password:""})
         }else{
@@ -56,6 +64,13 @@ const Auth = ({insideRegister}) => {
       try{
         const result = await loginAPI(inputData)
         if(result.status==200){
+          Swal.fire({
+            title: 'Success!',
+            text: `Welcome ${result.data?.user.username},..Please Explore!!`,
+            icon: 'success',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'OK'
+          });
           sessionStorage.setItem("user",JSON.stringify(result.data.user))
           sessionStorage.setItem("token",result.data.token)
           setisLogined(true)
@@ -79,17 +94,30 @@ const Auth = ({insideRegister}) => {
         console.log(err);
       }
       
-    }else{
-      alert("Please Fill Completely!!")
+    } else {
+      Swal.fire({
+        title: 'Missing Fields!',
+        text: 'Please fill all the details before submitting.',
+        icon: 'warning',
+        confirmButtonColor: '#f39c12',
+        confirmButtonText: 'OK'
+      });
     }
   }
-  
-
-
   return (
     <>
+    <video autoPlay muted loop className="bg-video">
+        <source src={bgv2} type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+      {/* Background Video */}
+     
+
+      {/* Overlay to make text readable */}
+      {/* <div className="video-overlay"></div> */}
+      
        
-            <div style={{minHeight:'100vh', width:'100%'}} className='d-flex justify-content-center align-items-center'>
+        <div style={{minHeight:'100vh', width:'100%'}} className='d-flex justify-content-center align-items-center'>
           <div className='container w-75'>
             <div className='shadow card p-2'>
               <div className='row align-items-center'>
@@ -97,7 +125,7 @@ const Auth = ({insideRegister}) => {
                   <img className='img-fluid' src="https://img.freepik.com/free-vector/privacy-policy-concept-illustration_114360-7853.jpg?t=st=1742816012~exp=1742819612~hmac=467a3b17131da44782e42d5be061fa285577f4c05ebcd784bc2a41a1137ba7bc&w=1060" alt="" />
                 </div>
                 <div className='col-lg-6'>
-                  <h1 className='mt-2 fw-bold text-primary'><i className='fa-solid fa-home'></i> HOME SERVICES</h1>
+                  <h1 className='mt-2 fw-bold text-success'><i className='fa-solid fa-home'></i> HOME SERVICES</h1>
                   
                   <h5 className='mt-4 mb-4 '>Sign {insideRegister?"Up":"In"} Your Account</h5>
                   
@@ -135,13 +163,10 @@ const Auth = ({insideRegister}) => {
     
                     </div> }
                 </div>
-                
               </div>
             </div>
           </div>
-    
         </div>
-      
     </>
   )
 }

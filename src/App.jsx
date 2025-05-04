@@ -14,19 +14,26 @@ import Tile from './components/Tile'
 import Ac from './components/Ac'
 import Bathroom from './components/Bathroom'
 import Washing from './components/Washing'
-import Footer from './components/Footer'
+
 import Cart from './pages/Cart'
 import Auth from './pages/Auth'
+import Footer from './components/Footer'
+import ScrollT from './pages/ScrollT'
+
 
 
 
 
 function App() {
 
+  
+
   return (
     <>
      <Header/>
+     <ScrollT />
      <Routes>
+     
           <Route path='/' element={<Home/>}/>
           <Route path='/login' element={<Auth/>}/>
           <Route path='/register' element={<Auth insideRegister={true}/>}/>
@@ -44,9 +51,8 @@ function App() {
           <Route path='/cart' element={<Cart/>}/>
           
      </Routes>
-     
+
      <Footer/>
-    
 
     </>
   )

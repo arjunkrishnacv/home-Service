@@ -9,26 +9,21 @@
   import { useNavigate } from 'react-router-dom'
   import { Button, Carousel, Nav } from 'react-bootstrap'
   import homeclean from '../assets/homeclean.jpg'
-  // import { Card } from 'react-bootstrap'
-  // import clean from '../assets/clean.jpg'
-  // import plumber from '../assets/plumber.jpg'
-  // import electric from '../assets/electric.jpg'
-  // import paint from '../assets/paint.jpg'
-  // import carpenter from '../assets/carpenter.jpg'
-  // import bathroom from '../assets/bathroom.jpg'
-  // import wm from '../assets/wm.jpg'
-  // import Painting from '../components/Painting'
+ 
+  import bgv1 from '../assets/bgv1.mp4'
+  import bgv2 from '../assets/bgv3.mp4'
 
 
 
 
   const Home = () => {
-    const navigate = useNavigate()
+    // const navigate = useNavigate()
     return (
       <>
-      
+
   <section id='home vh-100'>
-      <div className='container pt-5 mb-5'>
+  
+      <div className='container pt-2 mb-5'>
           <div className='row'>
               <div className='col-lg-6'>
                   <div className='container mt-5'>
@@ -38,7 +33,7 @@
                     <div className='text-dark'>
                     "Need a reliable professional for your home? We make it easy to book trusted experts for cleaning, repairs, plumbing, electrical work, and more. With fast scheduling, transparent pricing, and vetted professionals, we ensure top-quality service right at your doorstep. Book now and enjoy a hassle-free home service experience!"
                     </div> <br /> <hr />
-                    <button className='btn btn-danger p-2 mt-5 mb-5'>BOOK NOW!</button>
+                    <a href='#services' className='btn btn-danger p-2 mt-3 mb-5'>BOOK NOW!</a>
                   </div>   
 
 
@@ -107,6 +102,31 @@
         </div>
       </marquee>
   </section>
+  
+      <section id='contacts'>
+        <div className='container mt-5'>
+          <h1 className='text-center fw-bold'>Contact <span className='text-success'>Us</span></h1>
+      
+          <div> 
+        <h2 className='text-center fs-5'>Find us <span className="text-success">on </span>:</h2>
+          <div className='d-flex justify-content-center m-5 fs-5'>
+            <a href="https://react.dev/" style={{textDecoration:'none', color:'success '}}><i class="fa-brands fa-twitter ms-5"></i></a>
+            <a href="https://react.dev/" style={{textDecoration:'none', color:'success '}}><i class="fa-brands fa-instagram ms-5"></i></a>
+            <a href="https://react.dev/" style={{textDecoration:'none', color:'success '}}><i class="fa-brands fa-whatsapp ms-5"></i></a>
+            <a href="https://react.dev/" style={{textDecoration:'none', color:'success '}}><i class="fa-brands fa-facebook ms-5"></i></a>
+            <a href="https://react.dev/" style={{textDecoration:'none', color:'success '}}><i class="fa-brands fa-linkedin ms-5"></i></a>
+            <a href="https://react.dev/" style={{textDecoration:'none', color:'success '}}><i class="fa-brands fa-github ms-5"></i></a>
+          </div>
+      </div>
+
+
+
+        </div>
+      </section>
+
+
+
+  
       </>
     )
   }
